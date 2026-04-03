@@ -1,6 +1,6 @@
 /*
  * Vesktop, a desktop app aiming to give you a snappier Discord Experience
- * Copyright (c) 2023 Vendicated and Vencord contributors
+ * Copyright (c) 2026 Vendicated and Vesktop contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
@@ -11,11 +11,18 @@ import { dirname, join } from "path";
 import { CommandLine } from "./cli";
 
 const vesktopDir = dirname(process.execPath);
+const APP_NAME = "Fluxtop";
 
 export const PORTABLE =
     process.platform === "win32" &&
     !process.execPath.toLowerCase().endsWith("electron.exe") &&
-    !existsSync(join(vesktopDir, "Uninstall Vesktop.exe"));
+    !existsSync(join(vesktopDir, "Uninstall Vesktop.exe")) &&
+    !existsSync(join(vesktopDir, "Uninstall Fluxtop.exe"));
+
+if (!PORTABLE && !process.env.VENCORD_USER_DATA_DIR) {
+    app.setName(APP_NAME);
+    app.setPath("userData", join(app.getPath("appData"), APP_NAME));
+}
 
 export const DATA_DIR =
     process.env.VENCORD_USER_DATA_DIR || (PORTABLE ? join(vesktopDir, "Data") : join(app.getPath("userData")));
@@ -31,7 +38,7 @@ export const VENCORD_QUICKCSS_FILE = join(VENCORD_SETTINGS_DIR, "quickCss.css");
 export const VENCORD_SETTINGS_FILE = join(VENCORD_SETTINGS_DIR, "settings.json");
 export const VENCORD_THEMES_DIR = join(DATA_DIR, "themes");
 
-export const USER_AGENT = `Vesktop/${app.getVersion()} (https://github.com/Vencord/Vesktop)`;
+export const USER_AGENT = `Fluxtop/${app.getVersion()} (https://github.com/Vencord/Vesktop)`;
 
 // dimensions shamelessly stolen from Discord Desktop :3
 export const MIN_WIDTH = 940;
@@ -39,7 +46,14 @@ export const MIN_HEIGHT = 500;
 export const DEFAULT_WIDTH = 1280;
 export const DEFAULT_HEIGHT = 720;
 
-export const DISCORD_HOSTNAMES = ["discord.com", "canary.discord.com", "ptb.discord.com"];
+export const DISCORD_HOSTNAMES = [
+    "discord.com",
+    "canary.discord.com",
+    "ptb.discord.com",
+    "localhost",
+    "127.0.0.1",
+    "[::1]"
+];
 
 const VersionString = `AppleWebKit/537.36 (KHTML, like Gecko) Chrome/${process.versions.chrome.split(".")[0]}.0.0.0 Safari/537.36`;
 const BrowserUserAgents = {

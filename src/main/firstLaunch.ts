@@ -1,6 +1,6 @@
 /*
  * Vesktop, a desktop app aiming to give you a snappier Discord Experience
- * Copyright (c) 2023 Vendicated and Vencord contributors
+ * Copyright (c) 2026 Vendicated and Vesktop contributors
  * SPDX-License-Identifier: GPL-3.0-or-later
  */
 
@@ -19,6 +19,7 @@ import { loadView } from "./vesktopStatic";
 
 interface Data {
     discordBranch: "stable" | "canary" | "ptb";
+    fluxerToken?: string;
     minimizeToTray?: "on";
     autoStart?: "on";
     importSettings?: "on";
@@ -32,7 +33,11 @@ export function createFirstLaunchTour() {
         frame: true,
         autoHideMenuBar: true,
         height: 550,
-        width: 600
+        width: 600,
+        webPreferences: {
+            sandbox: false,
+            webSecurity: false
+        }
     });
 
     makeLinksOpenExternally(win);
@@ -45,9 +50,10 @@ export function createFirstLaunchTour() {
         const data = JSON.parse(msg.slice(5)) as Data;
 
         State.store.firstLaunch = false;
-        Settings.store.discordBranch = data.discordBranch;
+        Settings.store.discordBranch = "stable";
         Settings.store.minimizeToTray = !!data.minimizeToTray;
-        Settings.store.arRPC = !!data.richPresence;
+        Settings.store.arRPC = false;
+        Settings.store.fluxerToken = data.fluxerToken;
 
         if (data.autoStart) autoStart.enable();
 
@@ -74,4 +80,52 @@ export function createFirstLaunchTour() {
 
         createWindows();
     });
+}
+
+export function createFluxerTokenRefreshWindow(
+    onSubmit: (token: string) => void,
+    onClose?: () => void,
+    parent?: BrowserWindow
+) {
+    const win = new BrowserWindow({
+        ...SplashProps,
+        parent,
+        modal: !!parent,
+        transparent: false,
+        frame: true,
+        autoHideMenuBar: true,
+        height: 360,
+        width: 600,
+        resizable: false,
+        webPreferences: {
+            sandbox: false,
+            webSecurity: false
+        }
+    });
+
+    makeLinksOpenExternally(win);
+    loadView(win, "fluxer-token-refresh.html");
+
+    win.on("closed", () => onClose?.());
+    win.webContents.addListener("console-message", (_e, _l, msg) => {
+        if (msg === "cancel") {
+            win.close();
+            return;
+        }
+
+        if (!msg.startsWith("form:")) return;
+
+        try {
+            const data = JSON.parse(msg.slice(5)) as { fluxerToken?: string };
+            const token = data.fluxerToken?.trim();
+            if (!token) return;
+
+            onSubmit(token);
+            win.close();
+        } catch (error) {
+            console.error("[FluxerTokenRefresh] Failed to parse submitted token:", error);
+        }
+    });
+
+    return win;
 }

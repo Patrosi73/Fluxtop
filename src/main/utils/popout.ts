@@ -32,12 +32,13 @@ const ALLOWED_FEATURES = new Set([
 
 const MIN_POPOUT_WIDTH = 320;
 const MIN_POPOUT_HEIGHT = 180;
+const customTitleBar = Settings.store.customTitleBar ?? (process.platform === 'win32');
 const DEFAULT_POPOUT_OPTIONS: BrowserWindowConstructorOptions = {
     title: "Discord Popout",
     backgroundColor: "#2f3136",
     minWidth: MIN_POPOUT_WIDTH,
     minHeight: MIN_POPOUT_HEIGHT,
-    frame: Settings.store.customTitleBar !== true,
+    frame: customTitleBar !== true,
     titleBarStyle: process.platform === "darwin" ? "hidden" : undefined,
     trafficLightPosition:
         process.platform === "darwin"

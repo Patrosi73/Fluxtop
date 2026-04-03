@@ -5,10 +5,11 @@
  */
 
 import { Settings } from "renderer/settings";
+import { isWindows } from "renderer/utils";
 
 import { addPatch } from "./shared";
 
-if (Settings.store.customTitleBar)
+if (Settings.store.customTitleBar ?? isWindows)
     addPatch({
         patches: [
             {

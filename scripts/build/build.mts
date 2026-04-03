@@ -84,6 +84,12 @@ await Promise.all([
     }),
     createContext({
         ...NodeCommonOpts,
+        entryPoints: ["discord-adapter-meme/src/index.ts"],
+        outfile: "dist/js/discordAdapter.js",
+        footer: { js: "//# sourceURL=VesktopDiscordAdapter" }
+    }),
+    createContext({
+        ...NodeCommonOpts,
         entryPoints: ["src/main/arrpc/worker.ts"],
         outfile: "dist/js/arRpcWorker.js",
         footer: { js: "//# sourceURL=VesktopArRpcWorker" }

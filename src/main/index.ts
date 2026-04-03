@@ -5,14 +5,15 @@
  */
 
 import "./cli";
+import { DATA_DIR } from "./constants";
 import "./updater";
 import "./ipc";
 import "./userAssets";
 import "./vesktopProtocol";
 
-import { app, BrowserWindow, nativeTheme } from "electron";
+import { app, BrowserWindow, nativeTheme, session } from "electron";
 
-import { DATA_DIR } from "./constants";
+import { stopDiscordAdapter } from "./discordAdapter";
 import { createFirstLaunchTour } from "./firstLaunch";
 import { createWindows, mainWin } from "./mainWindow";
 import { registerMediaPermissionsHandler } from "./mediaPermissions";
@@ -21,12 +22,13 @@ import { Settings, State } from "./settings";
 import { setAsDefaultProtocolClient } from "./utils/setAsDefaultProtocolClient";
 import { isDeckGameMode } from "./utils/steamOS";
 
-console.log("Vesktop v" + app.getVersion());
+console.log("Fluxtop v" + app.getVersion());
 
 // Make the Vencord files use our DATA_DIR
 process.env.VENCORD_USER_DATA_DIR = DATA_DIR;
 
 const isLinux = process.platform === "linux";
+const LOCAL_ADAPTER_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
 export let enableHardwareAcceleration = true;
 
@@ -111,7 +113,16 @@ function init() {
     });
 
     app.whenReady().then(async () => {
-        if (process.platform === "win32") app.setAppUserModelId("dev.vencord.vesktop");
+        if (process.platform === "win32") app.setAppUserModelId("dev.vencord.fluxtop");
+
+        session.defaultSession.setCertificateVerifyProc((request, callback) => {
+            if (LOCAL_ADAPTER_HOSTS.has(request.hostname)) {
+                callback(0);
+                return;
+            }
+
+            callback(-3);
+        });
 
         registerScreenShareHandler();
         registerMediaPermissionsHandler();
@@ -126,10 +137,10 @@ function init() {
 
 if (!app.requestSingleInstanceLock({ IS_DEV })) {
     if (IS_DEV) {
-        console.log("Vesktop is already running. Quitting previous instance...");
+        console.log("Fluxtop is already running. Quitting previous instance...");
         init();
     } else {
-        console.log("Vesktop is already running. Quitting...");
+        console.log("Fluxtop is already running. Quitting...");
         app.quit();
     }
 } else {
@@ -152,4 +163,8 @@ app.on("open-url", (_, url) => {
 
 app.on("window-all-closed", () => {
     if (process.platform !== "darwin") app.quit();
+});
+
+app.on("before-quit", () => {
+    stopDiscordAdapter();
 });

@@ -25,6 +25,7 @@ import { createAboutWindow } from "./about";
 import { initArRPC } from "./arrpc";
 import { CommandLine } from "./cli";
 import { BrowserUserAgent, DEFAULT_HEIGHT, DEFAULT_WIDTH, MIN_HEIGHT, MIN_WIDTH } from "./constants";
+import { startDiscordAdapter } from "./discordAdapter";
 import { AppEvents } from "./events";
 import { darwinURL } from "./index";
 import { sendRendererCommand } from "./ipcCommands";
@@ -309,11 +310,12 @@ function getWindowBoundsOptions(): BrowserWindowConstructorOptions {
 }
 
 function buildBrowserWindowOptions(): BrowserWindowConstructorOptions {
-    const { staticTitle, transparencyOption, enableMenu, customTitleBar, splashTheming, splashBackground } =
+    const { staticTitle, transparencyOption, enableMenu, customTitleBar: customTitleBarRaw, splashTheming, splashBackground } =
         Settings.store;
 
     const { frameless, transparent, macosVibrancyStyle } = VencordSettings.store;
 
+    const customTitleBar = customTitleBarRaw ?? (process.platform === 'win32');
     const noFrame = frameless === true || customTitleBar === true;
     const backgroundColor =
         splashTheming !== false ? splashBackground : nativeTheme.shouldUseDarkColors ? "#313338" : "#ffffff";
@@ -375,7 +377,7 @@ function createMainWindow() {
     const win = (mainWin = new BrowserWindow(buildBrowserWindowOptions()));
 
     win.setMenuBarVisibility(false);
-    if (process.platform === "darwin" && Settings.store.customTitleBar) win.setWindowButtonVisibility(false);
+    if (process.platform === "darwin" && customTitleBar) win.setWindowButtonVisibility(false);
 
     win.on("close", e => {
         const useTray = !isDeckGameMode && Settings.store.minimizeToTray !== false && Settings.store.tray !== false;
@@ -422,7 +424,7 @@ export function loadUrl(uri: string | undefined) {
 
     // we do not rely on 'did-finish-load' because it fires even if loadURL fails which triggers early detruction of the splash
     mainWin
-        .loadURL(`https://${subdomain}discord.com/${uri ? new URL(uri).pathname.slice(1) || "app" : "app"}`)
+        .loadURL(`https://localhost:3666/app`)
         .then(() => AppEvents.emit("appLoaded"))
         .catch(error => retryUrl(error.url, error.code));
 }
@@ -445,6 +447,15 @@ export async function createWindows() {
         if (isDeckGameMode) splash.setFullScreen(true);
     }
 
+    updateSplashMessage("Starting backend adapter...");
+    try {
+        await startDiscordAdapter(message => updateSplashMessage(message));
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        console.error("[DiscordAdapter] Failed to start adapter during app bootstrap:", error);
+        updateSplashMessage(`Backend failed to start (${message}). Retrying connection...`);
+    }
+
     await ensureVencordFiles();
     runVencordMain();
 
@@ -452,6 +463,10 @@ export async function createWindows() {
 
     AppEvents.on("appLoaded", () => {
         splash?.destroy();
+
+        if (Settings.store.fluxerToken) {
+            mainWin!.webContents.send(IpcEvents.SET_FLUXER_TOKEN, Settings.store.fluxerToken);
+        }
 
         if (!startMinimized) {
             if (splash) mainWin!.show();

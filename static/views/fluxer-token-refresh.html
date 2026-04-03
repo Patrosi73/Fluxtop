@@ -2,7 +2,7 @@
 <meta charset="utf-8" />
 
 <head>
-    <title>Fluxtop Setup</title>
+    <title>Update Fluxer Token</title>
 
     <link rel="stylesheet" href="./common.css" type="text/css" />
 
@@ -20,20 +20,13 @@
             box-sizing: border-box;
         }
 
-        select {
-            background: var(--bg);
-            color: var(--fg);
-            padding: 0.3em;
-            margin: -0.3em;
-            border-radius: 6px;
-        }
-
         h1 {
             margin: 0.4em 0 0;
         }
 
         p {
             margin: 1em 0 2em;
+            color: var(--fg-secondary);
         }
 
         form {
@@ -46,21 +39,7 @@
             position: relative;
             display: flex;
             justify-content: space-between;
-        }
-
-        label:has(input[type="checkbox"]),
-        select {
-            cursor: pointer;
-        }
-
-        label:not(:last-child)::after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            width: 100%;
-            height: 1px;
-            background-color: var(--fg-secondary);
-            opacity: 0.5;
+            gap: 1em;
         }
 
         label div {
@@ -81,6 +60,18 @@
             color: var(--fg-secondary);
         }
 
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+        }
+
+        #show-wrap {
+            display: flex;
+            gap: 0.4em;
+            align-items: center;
+            color: var(--fg-secondary);
+        }
+
         #buttons {
             display: flex;
             justify-content: end;
@@ -90,7 +81,7 @@
 
         button {
             padding: 0.6em;
-            background: red;
+            background: #666;
             color: white;
             border-radius: 6px;
             border: none;
@@ -109,49 +100,36 @@
 </head>
 
 <body>
-    <h1>Welcome to Fluxtop</h1>
-    <p>Let's configure your experience!</p>
+    <h1>Token expired</h1>
+    <p>Your Fluxer token is no longer valid. Paste a new token to continue.</p>
 
     <form>
         <label>
             <div>
                 <h2>Fluxer Token</h2>
-                <span>This will be used to authenticate with the Fluxer API. To obtain one, please read the repository README.</span>
+                <span>Only this value will be updated.</span>
             </div>
-            <input type="password" name="fluxerToken" />
+            <input type="password" name="fluxerToken" required />
         </label>
-
-        <label>
-            <div>
-                <h2>Start with System</h2>
-                <span>Automatically open Fluxtop when your computer starts</span>
-            </div>
-            <input type="checkbox" name="autoStart" />
-        </label>
-
-        <label>
-            <div>
-                <h2>Import Settings</h2>
-                <span>Import Settings from existing Vencord install (if found)</span>
-            </div>
-            <input type="checkbox" name="importSettings" checked />
-        </label>
-
-        <label>
-            <div>
-                <h2>Minimise to Tray</h2>
-                <span>Minimise to Tray when closing</span>
-            </div>
-            <input type="checkbox" name="minimizeToTray" checked />
+        <label id="show-wrap">
+            <input type="checkbox" id="show-token" />
+            Show Token
         </label>
     </form>
     <div id="buttons">
-        <button id="cancel">Quit</button>
-        <button id="submit">Submit</button>
+        <button id="cancel">Cancel</button>
+        <button id="submit">Save Token</button>
     </div>
 </body>
 
 <script>
+    const tokenInput = document.querySelector('input[name="fluxerToken"]');
+    const showToken = document.getElementById("show-token");
+
+    showToken.onchange = () => {
+        tokenInput.type = showToken.checked ? "text" : "password";
+    };
+
     cancel.onclick = () => console.info("cancel");
     submit.onclick = e => {
         const form = document.querySelector("form");

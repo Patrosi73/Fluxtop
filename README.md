@@ -1,60 +1,35 @@
-# Vesktop
+# Fluxtop
+A modified, experimental and very hacky fork of [Vesktop](https://github.com/Vencord/Vesktop) which uses an improved version of [Alula](https://github.com/alula)'s [discord-adapter-meme](https://github.com/alula/discord-adapter-meme) to allow connecting to Fluxer from a "desktop" Discord client.
 
-Vesktop is a custom Discord desktop app
+## Getting your token
+1. Log in to Fluxer on a web browser
+2. Open Developer Tools (usually Ctrl+Shift+I), navigate to the Network tab
+3. While the network tab is open, click on any open DM. Then look for a request titled `messages?limit=50`, and click on it
+4. In the Headers tab, scroll down until you see Request Headers. Under that, there should be an Authorization field. Copy the value of it and paste it into Fluxtop's initial setup screen (or the token update screen).
+5. If your token is correct you should be logged in. If not, you'll see the Token Update screen. From there you have to paste in the correct token and try again.
 
-**Main features**:
-- Vencord preinstalled
-- Much more lightweight and faster than the official Discord app
-- Linux Screenshare with sound & wayland
-- Much better privacy, since Discord has no access to your system
+## Changes from upstream discord-adapter-meme
+- **CDN routing for fluxerusercontent.com URLs**, this allows for badges and some other stuff to work properly
+- Fixed domain URLs in profile connections
+- Fixed Bluesky connection appearance
+- Implemented Devices tab in User Settings
+- Make the Connections tab in User Settings fetch connections properly
+- Server invite modals having proper flags, join states, and banner URLs
+- **Local Protobuf saving** (this allows you to save settings normally unavailable on Fluxer, like themes etc)
+- Fixup Gateway websocket responses to be more in line with what Discord expects
+- Fixed up DM opening to not create a GC
 
-**Not yet supported**:
-- Global Keybinds
-- see the [Roadmap](https://github.com/Vencord/Vesktop/issues/324)
+## Changes from upstream Vesktop
+- Implemented token login, this is required for Fluxer as replicating normal authentication is impossible
+  - Also added detection if the token expires
+- Fixed up titlebar defaults on Windows, this makes the Discord titlebar actually work by default (this was personally bothering me :P)
 
-![](https://github.com/Vencord/Vesktop/assets/45497981/8608a899-96a9-4027-9725-2cb02ba189fd)
-![](https://github.com/Vencord/Vesktop/assets/45497981/8701e5de-52c4-4346-a990-719cb971642e)
-
-## Installing
-
-Visit https://vesktop.dev/install
-
-## Building from Source
-
-You need to have the following dependencies installed:
-- [Git](https://git-scm.com/downloads)
-- [Node.js](https://nodejs.org/en/download)
-- pnpm: `npm install --global pnpm`
-
-Packaging will create builds in the dist/ folder
-
-```sh
-git clone https://github.com/Vencord/Vesktop
-cd Vesktop
-
-# Install Dependencies
-pnpm i
-
-# Either run it without packaging
-pnpm start
-
-# Or package (will build packages for your OS)
-pnpm package
-
-# Or only build the Linux Pacman package
-pnpm package --linux pacman
-
-# Or package to a directory only
-pnpm package:dir
-```
-
-## Building LibVesktop from Source
-
-This is a small C++ helper library Vesktop uses on Linux to emit D-Bus events. By default, prebuilt binaries for x64 and arm64 are used.
-
-If you want to build it from source:
-1. Install build dependencies:
-    - Debian/Ubuntu: `apt install build-essential python3 curl pkg-config libglib2.0-dev`
-    - Fedora: `dnf install @c-development @development-tools python3 curl pkgconf-pkg-config glib2-devel`
-2. Run `pnpm buildLibVesktop`
-3. From now on, building Vesktop will use your own build
+## TODO
+- Prevent spam on `/api/v9/users` when in a DM
+- Make toggling connection visibility work
+- Implement Server Discovery (it should be working?? I honestly don't know why Discord refuses to fetch it)
+- Implement different badges for Plutonium/Visionary, also add support for "subscribed since {certain date}"
+- Add additional Protobuf translations like turning off incoming DMs or friend requests
+- Loading more profile data when clicking on a channel
+- Image uploads
+- VC support (totally going to happen...)

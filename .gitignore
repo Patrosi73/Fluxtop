@@ -4,3 +4,5 @@ node_modules
 .DS_Store
 .idea/
 .pnpm-store/
+localhost.pem
+localhost-key.pem

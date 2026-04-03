@@ -11,6 +11,10 @@ import { VesktopNative } from "./VesktopNative";
 
 contextBridge.exposeInMainWorld("VesktopNative", VesktopNative);
 
+ipcRenderer.on(IpcEvents.SET_FLUXER_TOKEN, (_, token) => {
+    localStorage.setItem("token", JSON.stringify(token));
+});
+
 // TODO: remove this legacy workaround once some time has passed
 const isSandboxed = typeof __dirname === "undefined";
 if (isSandboxed) {
