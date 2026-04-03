@@ -20,6 +20,7 @@ jobs:
             APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
 
         strategy:
+            fail-fast: false
             matrix:
                 os: [macos-latest, ubuntu-latest, windows-latest]
                 include:
