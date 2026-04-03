@@ -12,6 +12,12 @@ permissions:
 jobs:
     release:
         runs-on: ${{ matrix.os }}
+        env:
+            APPLE_SIGNING_CERT: ${{ secrets.APPLE_SIGNING_CERT }}
+            APPLE_SIGNING_CERT_PASSWORD: ${{ secrets.APPLE_SIGNING_CERT_PASSWORD }}
+            APPLE_API_KEY: ${{ secrets.APPLE_API_KEY }}
+            APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+            APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
 
         strategy:
             matrix:
@@ -56,21 +62,21 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
             - name: Run Electron Builder (macOS signed)
-              if: ${{ matrix.platform == 'mac' && secrets.APPLE_SIGNING_CERT != '' && secrets.APPLE_SIGNING_CERT_PASSWORD != '' && secrets.APPLE_API_KEY != '' && secrets.APPLE_API_KEY_ID != '' && secrets.APPLE_API_ISSUER != '' }}
+              if: ${{ matrix.platform == 'mac' && env.APPLE_SIGNING_CERT != '' && env.APPLE_SIGNING_CERT_PASSWORD != '' && env.APPLE_API_KEY != '' && env.APPLE_API_KEY_ID != '' && env.APPLE_API_ISSUER != '' }}
               run: |
                   echo "$API_KEY" > apple.p8
                   pnpm electron-builder --${{ matrix.platform }} --publish always
               env:
                 GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-                CSC_LINK: ${{ secrets.APPLE_SIGNING_CERT }}
-                CSC_KEY_PASSWORD: ${{ secrets.APPLE_SIGNING_CERT_PASSWORD }}
-                API_KEY: ${{ secrets.APPLE_API_KEY }}
+                CSC_LINK: ${{ env.APPLE_SIGNING_CERT }}
+                CSC_KEY_PASSWORD: ${{ env.APPLE_SIGNING_CERT_PASSWORD }}
+                API_KEY: ${{ env.APPLE_API_KEY }}
                 APPLE_API_KEY: apple.p8
-                APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
-                APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+                APPLE_API_KEY_ID: ${{ env.APPLE_API_KEY_ID }}
+                APPLE_API_ISSUER: ${{ env.APPLE_API_ISSUER }}
 
             - name: Run Electron Builder (macOS unsigned)
-              if: ${{ matrix.platform == 'mac' && (secrets.APPLE_SIGNING_CERT == '' || secrets.APPLE_SIGNING_CERT_PASSWORD == '' || secrets.APPLE_API_KEY == '' || secrets.APPLE_API_KEY_ID == '' || secrets.APPLE_API_ISSUER == '') }}
+              if: ${{ matrix.platform == 'mac' && (env.APPLE_SIGNING_CERT == '' || env.APPLE_SIGNING_CERT_PASSWORD == '' || env.APPLE_API_KEY == '' || env.APPLE_API_KEY_ID == '' || env.APPLE_API_ISSUER == '') }}
               run: |
                   pnpm electron-builder --mac --publish always --config.mac.notarize=false --config.mac.identity=null
               env:
