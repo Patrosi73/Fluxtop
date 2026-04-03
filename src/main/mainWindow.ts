@@ -189,8 +189,11 @@ function initWindowBoundsListeners(win: BrowserWindow) {
     win.on("maximize", saveState);
     win.on("minimize", saveState);
     win.on("unmaximize", saveState);
+    win.on("restore", saveState);
 
     const saveBounds = () => {
+        if (win.isMaximized()) return;
+
         State.store.windowBounds = win.getBounds();
     };
 
@@ -547,5 +550,6 @@ export async function createWindows() {
         }
     });
 
+    mainWin.webContents.on("render-process-gone", (event, details) => console.log(details));
     initArRPC();
 }
