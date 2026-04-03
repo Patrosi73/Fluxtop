@@ -25,8 +25,9 @@ import { createAboutWindow } from "./about";
 import { initArRPC } from "./arrpc";
 import { CommandLine } from "./cli";
 import { BrowserUserAgent, DEFAULT_HEIGHT, DEFAULT_WIDTH, MIN_HEIGHT, MIN_WIDTH } from "./constants";
-import { startDiscordAdapter } from "./discordAdapter";
+import { onDiscordAdapterInvalidToken, startDiscordAdapter } from "./discordAdapter";
 import { AppEvents } from "./events";
+import { createFluxerTokenRefreshWindow } from "./firstLaunch";
 import { darwinURL } from "./index";
 import { sendRendererCommand } from "./ipcCommands";
 import { Settings, State, VencordSettings } from "./settings";
@@ -39,6 +40,8 @@ import { downloadVencordFiles, ensureVencordFiles, vencordSupportsSandboxing } f
 import { VENCORD_FILES_DIR } from "./vencordFilesDir";
 
 let isQuitting = false;
+let removeInvalidTokenListener: (() => void) | undefined;
+let fluxerTokenRefreshWindow: BrowserWindow | undefined;
 
 applyDeckKeyboardFix();
 
@@ -416,6 +419,41 @@ function createMainWindow() {
     return win;
 }
 
+function hasFluxerToken() {
+    return !!Settings.store.fluxerToken?.trim();
+}
+
+function openFluxerTokenRefreshWindow() {
+    if (!mainWin || mainWin.isDestroyed()) return;
+
+    if (fluxerTokenRefreshWindow && !fluxerTokenRefreshWindow.isDestroyed()) {
+        fluxerTokenRefreshWindow.focus();
+        return;
+    }
+
+    fluxerTokenRefreshWindow = createFluxerTokenRefreshWindow(
+        token => {
+            Settings.store.fluxerToken = token;
+            if (mainWin && !mainWin.isDestroyed()) {
+                mainWin.webContents.send(IpcEvents.SET_FLUXER_TOKEN, token);
+                loadUrl(undefined);
+            }
+        },
+        () => {
+            fluxerTokenRefreshWindow = undefined;
+        },
+        mainWin
+    );
+}
+
+function initInvalidTokenPopupListener() {
+    if (removeInvalidTokenListener) return;
+
+    removeInvalidTokenListener = onDiscordAdapterInvalidToken(() => {
+        openFluxerTokenRefreshWindow();
+    });
+}
+
 const runVencordMain = once(() => require(join(VENCORD_FILES_DIR, "vencordDesktopMain.js")));
 
 export function loadUrl(uri: string | undefined) {
@@ -460,12 +498,17 @@ export async function createWindows() {
     runVencordMain();
 
     mainWin = createMainWindow();
+    initInvalidTokenPopupListener();
 
     AppEvents.on("appLoaded", () => {
         splash?.destroy();
 
-        if (Settings.store.fluxerToken) {
-            mainWin!.webContents.send(IpcEvents.SET_FLUXER_TOKEN, Settings.store.fluxerToken);
+        if (hasFluxerToken()) {
+            const token = Settings.store.fluxerToken!.trim();
+            Settings.store.fluxerToken = token;
+            mainWin!.webContents.send(IpcEvents.SET_FLUXER_TOKEN, token);
+        } else {
+            openFluxerTokenRefreshWindow();
         }
 
         if (!startMinimized) {

@@ -1,6 +1,11 @@
 # Fluxtop
 A modified, experimental and very hacky fork of [Vesktop](https://github.com/Vencord/Vesktop) which uses an improved version of [Alula](https://github.com/alula)'s [discord-adapter-meme](https://github.com/alula/discord-adapter-meme) to allow connecting to Fluxer from a "desktop" Discord client.
 
+## Building
+Check out the original [Vesktop readme](VESKTOP-README.md) for build instructions. However, you must also...
+- Clone the repository with the `--recurse-submodules` flag to also clone the modified version of `discord-adapter-meme`, and...
+- Run `pnpm i` within the `discord-adapter-meme` directory.
+
 ## Getting your token
 1. Log in to Fluxer on a web browser
 2. Open Developer Tools (usually Ctrl+Shift+I), navigate to the Network tab

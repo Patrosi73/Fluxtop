@@ -46,6 +46,8 @@
             position: relative;
             display: flex;
             justify-content: space-between;
+            gap: 1em;
+            align-items: center;
         }
 
         label:has(input[type="checkbox"]),
@@ -79,6 +81,24 @@
             font-size: 0.9rem;
             font-weight: 400;
             color: var(--fg-secondary);
+        }
+
+        input[type="password"],
+        input[type="text"] {
+            width: 100%;
+            max-width: 220px;
+            box-sizing: border-box;
+            padding: 0.45em 0.6em;
+            border: 1px solid var(--fg-semi-trans);
+            border-radius: 4px;
+            background: transparent;
+            color: var(--fg);
+            outline: none;
+        }
+
+        input[type="password"]:focus,
+        input[type="text"]:focus {
+            border-color: var(--link);
         }
 
         #buttons {

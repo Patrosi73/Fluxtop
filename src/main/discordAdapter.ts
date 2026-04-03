@@ -2,7 +2,7 @@
 
  * Vesktop, a desktop app aiming to give you a snappier Discord Experience
 
- * Copyright (c) 2026 Vendicated and Vesktop contributors
+ * Copyright (c) 2026 Patrosi73 and Vesktop contributors
 
 
  * SPDX-License-Identifier: GPL-3.0-or-later
@@ -23,10 +23,6 @@ const ADAPTER_CWD_CANDIDATES = [
     join(process.cwd(), "discord-adapter-meme"),
     join(__dirname, "..", "..", "discord-adapter-meme")
 ];
-const ADAPTER_STUFF_CANDIDATES = [
-    join(process.cwd(), "discord-adapter-meme", "stuff"),
-    join(__dirname, "..", "..", "discord-adapter-meme", "stuff")
-];
 const ADAPTER_PORT = 3666;
 const START_TIMEOUT = 30_000;
 const START_POLL_INTERVAL = 500;
@@ -39,6 +35,7 @@ type AdapterIpcMessage = {
     type?: string;
     event?: string;
 };
+type EnvValue = string | undefined;
 
 let adapterProcess: AdapterProcess | undefined;
 let startPromise: Promise<void> | undefined;
@@ -74,11 +71,18 @@ function attachAdapterMessageBridge(processRef: AdapterProcess) {
 }
 
 function resolveAdapterCwd() {
-    return ADAPTER_CWD_CANDIDATES.find(path => existsSync(join(path, "stuff", "index.html"))) ?? process.cwd();
+    return ADAPTER_CWD_CANDIDATES.find(path => existsSync(join(path, "src", "index.ts"))) ?? process.cwd();
 }
 
-function resolveAdapterStuffDir() {
-    return ADAPTER_STUFF_CANDIDATES.find(path => existsSync(join(path, "index.html")));
+function sanitizeEnv(env: Record<string, EnvValue>) {
+    const sanitized: Record<string, string> = {};
+    for (const [key, value] of Object.entries(env)) {
+        if (typeof value === "string") {
+            sanitized[key] = value;
+        }
+    }
+
+    return sanitized;
 }
 
 function pingAdapter() {
@@ -164,18 +168,17 @@ export async function startDiscordAdapter(onStatus?: AdapterStatusHandler) {
 
         onStatus?.("Starting backend adapter...");
         let child: AdapterProcess;
-        const adapterStuffDir = resolveAdapterStuffDir();
-        const adapterEnv = {
+        const adapterEnv = sanitizeEnv({
             ...process.env,
             PORT: String(ADAPTER_PORT),
-            ADAPTER_STUFF_DIR: adapterStuffDir,
             VENCORD_USER_DATA_DIR: DATA_DIR
-        };
+        });
 
         if (existsSync(ADAPTER_BUNDLE_ENTRY)) {
             child = utilityProcess.fork(ADAPTER_BUNDLE_ENTRY, [], {
                 cwd: process.cwd(),
-                env: adapterEnv
+                env: adapterEnv,
+                stdio: "pipe"
             });
         } else {
             const adapterCwd = resolveAdapterCwd();

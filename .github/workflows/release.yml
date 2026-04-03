@@ -6,6 +6,9 @@ on:
             - v*
     workflow_dispatch:
 
+permissions:
+    contents: write
+
 jobs:
     release:
         runs-on: ${{ matrix.os }}
@@ -23,6 +26,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
             - uses: pnpm/action-setup@v4 # Install pnpm using packageManager key in package.json
 
             - name: Use Node.js 20
@@ -30,22 +35,28 @@ jobs:
               with:
                   node-version: 20
                   cache: "pnpm"
+                  cache-dependency-path: |
+                      pnpm-lock.yaml
+                      discord-adapter-meme/pnpm-lock.yaml
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
+            - name: Install adapter dependencies
+              run: pnpm -C discord-adapter-meme install --frozen-lockfile
+
             - name: Build
               run: pnpm build
 
-            - name: Run Electron Builder
+            - name: Run Electron Builder (Linux/Windows)
               if: ${{ matrix.platform != 'mac' }}
               run: |
                   pnpm electron-builder --${{ matrix.platform }} --publish always
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Run Electron Builder
-              if: ${{ matrix.platform == 'mac' }}
+            - name: Run Electron Builder (macOS signed)
+              if: ${{ matrix.platform == 'mac' && secrets.APPLE_SIGNING_CERT != '' && secrets.APPLE_SIGNING_CERT_PASSWORD != '' && secrets.APPLE_API_KEY != '' && secrets.APPLE_API_KEY_ID != '' && secrets.APPLE_API_ISSUER != '' }}
               run: |
                   echo "$API_KEY" > apple.p8
                   pnpm electron-builder --${{ matrix.platform }} --publish always
@@ -57,3 +68,11 @@ jobs:
                 APPLE_API_KEY: apple.p8
                 APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
                 APPLE_API_ISSUER: ${{ secrets.APPLE_API_ISSUER }}
+
+            - name: Run Electron Builder (macOS unsigned)
+              if: ${{ matrix.platform == 'mac' && (secrets.APPLE_SIGNING_CERT == '' || secrets.APPLE_SIGNING_CERT_PASSWORD == '' || secrets.APPLE_API_KEY == '' || secrets.APPLE_API_KEY_ID == '' || secrets.APPLE_API_ISSUER == '') }}
+              run: |
+                  pnpm electron-builder --mac --publish always --config.mac.notarize=false --config.mac.identity=null
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  CSC_IDENTITY_AUTO_DISCOVERY: "false"
