@@ -313,12 +313,18 @@ function getWindowBoundsOptions(): BrowserWindowConstructorOptions {
 }
 
 function buildBrowserWindowOptions(): BrowserWindowConstructorOptions {
-    const { staticTitle, transparencyOption, enableMenu, customTitleBar: customTitleBarRaw, splashTheming, splashBackground } =
-        Settings.store;
+    const {
+        staticTitle,
+        transparencyOption,
+        enableMenu,
+        customTitleBar: customTitleBarRaw,
+        splashTheming,
+        splashBackground
+    } = Settings.store;
 
     const { frameless, transparent, macosVibrancyStyle } = VencordSettings.store;
 
-    const customTitleBar = customTitleBarRaw ?? (process.platform === 'win32');
+    const customTitleBar = customTitleBarRaw ?? process.platform === "win32";
     const noFrame = frameless === true || customTitleBar === true;
     const backgroundColor =
         splashTheming !== false ? splashBackground : nativeTheme.shouldUseDarkColors ? "#313338" : "#ffffff";
@@ -377,6 +383,7 @@ function createMainWindow() {
     removeSettingsListeners();
     removeVencordSettingsListeners();
 
+    const customTitleBar = Settings.store.customTitleBar ?? process.platform === "win32";
     const win = (mainWin = new BrowserWindow(buildBrowserWindowOptions()));
 
     win.setMenuBarVisibility(false);

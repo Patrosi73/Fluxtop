@@ -12,6 +12,8 @@ jobs:
 
         steps:
             - uses: actions/checkout@v4
+              with:
+                  submodules: recursive
             - uses: pnpm/action-setup@v4 # Install pnpm using packageManager key in package.json
 
             - name: Use Node.js 20
@@ -19,9 +21,15 @@ jobs:
               with:
                   node-version: 20
                   cache: "pnpm"
+                  cache-dependency-path: |
+                      pnpm-lock.yaml
+                      discord-adapter-meme/pnpm-lock.yaml
 
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
+
+            - name: Install adapter dependencies
+              run: pnpm -C discord-adapter-meme install --frozen-lockfile
 
             - name: Run tests
               run: pnpm test

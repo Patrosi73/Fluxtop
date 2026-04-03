@@ -32,7 +32,7 @@ const ALLOWED_FEATURES = new Set([
 
 const MIN_POPOUT_WIDTH = 320;
 const MIN_POPOUT_HEIGHT = 180;
-const customTitleBar = Settings.store.customTitleBar ?? (process.platform === 'win32');
+const customTitleBar = Settings.store.customTitleBar ?? process.platform === "win32";
 const DEFAULT_POPOUT_OPTIONS: BrowserWindowConstructorOptions = {
     title: "Discord Popout",
     backgroundColor: "#2f3136",

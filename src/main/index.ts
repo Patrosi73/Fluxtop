@@ -5,14 +5,14 @@
  */
 
 import "./cli";
-import { DATA_DIR } from "./constants";
-import "./updater";
 import "./ipc";
+import "./updater";
 import "./userAssets";
 import "./vesktopProtocol";
 
 import { app, BrowserWindow, nativeTheme, session } from "electron";
 
+import { DATA_DIR } from "./constants";
 import { stopDiscordAdapter } from "./discordAdapter";
 import { createFirstLaunchTour } from "./firstLaunch";
 import { createWindows, mainWin } from "./mainWindow";
