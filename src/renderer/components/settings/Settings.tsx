@@ -14,6 +14,7 @@ import { isMac, isWindows } from "renderer/utils";
 
 import { AutoStartToggle } from "./AutoStartToggle";
 import { DeveloperOptionsButton } from "./DeveloperOptions";
+import { DiscordBranchPicker } from "./DiscordBranchPicker";
 import { NotificationBadgeToggle } from "./NotificationBadgeToggle";
 import { OutdatedVesktopWarning } from "./OutdatedVesktopWarning";
 import { UserAssetsButton } from "./UserAssets";
@@ -34,6 +35,7 @@ export const cl = classNameFactory("vcd-settings-");
 export type SettingsComponent = ComponentType<{ settings: typeof Settings.store }>;
 
 const SettingsOptions: Record<string, Array<BooleanSetting | SettingsComponent>> = {
+    "Discord Branch": [DiscordBranchPicker],
     "System Startup & Performance": [
         AutoStartToggle,
         {
@@ -132,6 +134,13 @@ const SettingsOptions: Record<string, Array<BooleanSetting | SettingsComponent>>
         }
     ],
     Miscellaneous: [
+        {
+            key: "arRPC",
+            title: "Rich Presence",
+            description: "Enables Rich Presence via arRPC",
+            defaultValue: false
+        },
+
         {
             key: "openLinksWithElectron",
             title: "Open Links in app (experimental)",

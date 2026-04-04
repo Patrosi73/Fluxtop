@@ -54,5 +54,5 @@ Check out the original [Vesktop readme](VESKTOP-README.md) for build instruction
 - Add additional Protobuf translations like turning off incoming DMs or friend requests
 - Loading more profile data when clicking on a channel
 - Image uploads
-- make compiling the adapter work on macOS
+- make the app actually start on macOS (codesigning stuff...)
 - VC support (totally going to happen...)
