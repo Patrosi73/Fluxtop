@@ -1,5 +1,7 @@
+<img width="128" height="128" src="build/icon.svg"/>
+
 # Fluxtop
-A modified, experimental and very hacky fork of [Vesktop](https://github.com/Vencord/Vesktop) which uses an improved version of [Alula](https://github.com/alula)'s [discord-adapter-meme](https://github.com/alula/discord-adapter-meme) to allow connecting to Fluxer from a "desktop" Discord client.
+A modified, experimental and very hacky fork of [Vesktop](https://github.com/Vencord/Vesktop) which uses an improved version of [Alula](https://github.com/alula)'s [discord-adapter-meme](https://github.com/alula/discord-adapter-meme) to allow connecting to Fluxer from a "desktop" Discord client. Logo made by [jb](https://jbc.lol/).
 
 <img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/2bef5121-4590-4dc4-b582-528a2701d0fc" />
 
