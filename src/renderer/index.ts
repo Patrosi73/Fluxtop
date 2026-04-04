@@ -28,7 +28,7 @@ const customSettingsSections = (Vencord.Plugins.plugins.Settings as typeof Setti
 
 customSettingsSections.push(() => ({
     section: "Vesktop",
-    label: "Vesktop Settings",
+    label: "Fluxtop Settings",
     element: SettingsUi,
     className: "vc-vesktop-settings"
 }));
