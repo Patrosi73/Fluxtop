@@ -55,6 +55,10 @@ jobs:
             - name: Build
               run: pnpm build
 
+            - name: Install system dependencies (Linux)
+              if: ${{ matrix.platform == 'linux' }}
+              run: sudo apt-get update && sudo apt-get install -y libarchive-tools
+
             - name: Run Electron Builder (Windows)
               if: ${{ matrix.platform == 'windows' }}
               run: |
