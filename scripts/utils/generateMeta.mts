@@ -102,6 +102,6 @@ const output = xmlFormat(new XMLSerializer().serializeToString(parser), {
 });
 
 await mkdir("./dist", { recursive: true });
-await fs.writeFile("./dist/dev.vencord.Vesktop.metainfo.xml", output, "utf-8");
+await fs.writeFile("./dist/dev.vencord.fluxtop.metainfo.xml", output, "utf-8");
 
-console.log("Updated meta information written to ./dist/dev.vencord.Vesktop.metainfo.xml");
+console.log("Updated meta information written to ./dist/dev.vencord.fluxtop.metainfo.xml");

@@ -55,13 +55,19 @@ jobs:
             - name: Build
               run: pnpm build
 
-            - name: Run Electron Builder (Linux/Windows)
-              if: ${{ matrix.platform != 'mac' }}
+            - name: Run Electron Builder (Windows)
+              if: ${{ matrix.platform == 'windows' }}
               run: |
                   pnpm electron-builder --${{ matrix.platform }} --publish always
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
+            - name: Run Electron Builder (Linux)
+              if: ${{ matrix.platform == 'linux' }}
+              run: |
+                  pnpm electron-builder --${{ matrix.platform }} --publish always
+                  pnpm electron-builder --${{ matrix.platform }} pacman --publish always
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Run Electron Builder (macOS signed)
               if: ${{ matrix.platform == 'mac' && env.APPLE_SIGNING_CERT != '' && env.APPLE_SIGNING_CERT_PASSWORD != '' && env.APPLE_API_KEY != '' && env.APPLE_API_KEY_ID != '' && env.APPLE_API_ISSUER != '' }}
               run: |
