@@ -33,6 +33,6 @@ jobs:
                   git config user.name "github-actions[bot]"
                   git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-                  gh release upload "${{ github.event.release.tag_name }}" dist/dev.vencord.Vesktop.metainfo.xml
+                  gh release upload "${{ github.event.release.tag_name }}" dist/dev.vencord.fluxtop.metainfo.xml
               env:
                   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
