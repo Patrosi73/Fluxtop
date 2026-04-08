@@ -204,6 +204,23 @@
                 "--rpm-rpmbuild-define=_build_id_links none"
             ]
         },
+        "pacman": {
+            "depends": [
+                "c-ares",
+                "ffmpeg",
+                "gtk3",
+                "libevent",
+                "libvpx",
+                "libxslt",
+                "libxss",
+                "minizip",
+                "nss",
+                "re2",
+                "snappy",
+                "libnotify",
+                "libappindicator-gtk3"
+            ]
+        },
         "electronFuses": {
             "runAsNode": false,
             "enableCookieEncryption": false,
