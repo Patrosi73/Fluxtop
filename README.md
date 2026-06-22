@@ -46,13 +46,13 @@ Check out the original [Vesktop readme](VESKTOP-README.md) for build instruction
 - Fixed up titlebar defaults on Windows, this makes the Discord titlebar actually work by default (this was personally bothering me :P)
 
 ## TODO
-- Prevent spam on `/api/v9/users` when in a DM
-- Intermittent not loading of channels (most of the time it's the channel that is loaded first upon clicking on a server)
 - Make toggling connection visibility work
+- Make a channel not "refresh" after clicking it again after it's already open
 - Implement Server Discovery (it should be working?? I honestly don't know why the client refuses to fetch it)
 - Implement different badges for Plutonium/Visionary, also add support for "subscribed since {certain date}"
 - Add additional Protobuf translations like turning off incoming DMs or friend requests
 - Loading more profile data when clicking on a channel
+  - This seems to be related to the member list not working for certain servers. I'm honestly not sure what's the problem here
 - Image uploads
 - make the app actually start on macOS (codesigning stuff...)
 - VC support (totally going to happen...)
