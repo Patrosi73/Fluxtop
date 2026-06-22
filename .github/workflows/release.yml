@@ -45,7 +45,9 @@ jobs:
                   cache-dependency-path: |
                       pnpm-lock.yaml
                       discord-adapter-meme/pnpm-lock.yaml
-
+            - name: Use MSVC
+              uses: ilammy/msvc-dev-cmd@v1
+              
             - name: Install dependencies
               run: pnpm install --frozen-lockfile
 
