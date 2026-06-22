@@ -22,14 +22,14 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                os: [macos-latest, ubuntu-latest, windows-latest]
+                os: [macos-latest, ubuntu-latest, windows-2022]
                 include:
                     - os: macos-latest
                       platform: mac
                     - os: ubuntu-latest
                       platform: linux
-                    - os: windows-latest
-                      platform: windows-2022
+                    - os: windows-2022
+                      platform: windows
 
         steps:
             - uses: actions/checkout@v4
