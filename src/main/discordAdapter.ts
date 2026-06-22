@@ -13,6 +13,7 @@ import { join } from "path";
 import { DATA_DIR } from "./constants";
 
 const ADAPTER_BUNDLE_ENTRY = join(__dirname, "discordAdapter.js");
+const ADAPTER_STUFF_DIR = join(__dirname, "..", "..", "discord-adapter-meme", "stuff");
 const ADAPTER_CWD_CANDIDATES = [
     join(process.cwd(), "discord-adapter-meme"),
     join(__dirname, "..", "..", "discord-adapter-meme")
@@ -165,12 +166,13 @@ export async function startDiscordAdapter(onStatus?: AdapterStatusHandler) {
         const adapterEnv = sanitizeEnv({
             ...process.env,
             PORT: String(ADAPTER_PORT),
-            VENCORD_USER_DATA_DIR: DATA_DIR
+            VENCORD_USER_DATA_DIR: DATA_DIR,
+            ADAPTER_STUFF_DIR: existsSync(ADAPTER_STUFF_DIR) ? ADAPTER_STUFF_DIR : undefined
         });
 
         if (existsSync(ADAPTER_BUNDLE_ENTRY)) {
             child = utilityProcess.fork(ADAPTER_BUNDLE_ENTRY, [], {
-                cwd: process.cwd(),
+                cwd: DATA_DIR,
                 env: adapterEnv,
                 stdio: "pipe"
             });

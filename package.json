@@ -1,6 +1,6 @@
 {
     "name": "fluxtop",
-    "version": "1.7.0",
+    "version": "1.7.1",
     "private": true,
     "description": "A very hacky fork of Vesktop (a custom Discord app) with a Fluxer backend",
     "keywords": [],
@@ -150,7 +150,12 @@
                 "com.apple.security.device.camera": true,
                 "CFBundleIconName": "Icon"
             },
-            "notarize": true
+            "identity": "-",
+            "notarize": false,
+            "hardenedRuntime": true,
+            "gatekeeperAssess": false,
+            "entitlements": "build/entitlements.mac.plist",
+            "entitlementsInherit": "build/entitlements.mac.plist"
         },
         "dmg": {
             "background": "build/background.tiff",
