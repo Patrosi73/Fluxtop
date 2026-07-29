@@ -63,9 +63,7 @@ jobs:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Run Electron Builder (Linux)
               if: ${{ matrix.platform == 'linux' }}
-              run: |
-                  pnpm electron-builder --${{ matrix.platform }} --publish always
-                  pnpm electron-builder --${{ matrix.platform }} pacman --publish always
+              run: pnpm electron-builder --linux --publish always
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
             - name: Run Electron Builder (macOS)
