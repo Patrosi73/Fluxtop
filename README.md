@@ -30,18 +30,19 @@ Check out the original [Vesktop readme](VESKTOP-README.md) for build instruction
 
 
 ## Changes from upstream discord-adapter-meme
-- **CDN routing for fluxerusercontent.com URLs**, this allows for badges and some other stuff to work properly
+- **CDN routing for fluxerusercontent.com URLs** (this allows for badges and some other stuff to work properly)
 - Fixed domain URLs in profile connections
 - Fixed Bluesky connection appearance
 - Implemented Devices tab in User Settings
 - Make the Connections tab in User Settings fetch connections properly
 - Server invite modals having proper flags, join states, and banner URLs
 - **Local Protobuf saving** (this allows you to save settings normally unavailable on Fluxer, like themes etc)
-- Fixup Gateway websocket responses to be more in line with what Discord expects
+- Fixed up Gateway websocket responses to be more in line with what Discord expects
 - Fixed up DM opening to not create a GC
+- Fixed up relationships API transforming to use the right HTTP request methods in the right cases
 
 ## Changes from upstream Vesktop
-- Implemented token login, this is required for Fluxer as replicating normal authentication is impossible
+- Implemented token login, this is required for Fluxer as proxying regular authentication is impossible
   - Also added detection if the token expires
 - Fixed up titlebar defaults on Windows, this makes the Discord titlebar actually work by default (this was personally bothering me :P)
 
@@ -53,6 +54,9 @@ Check out the original [Vesktop readme](VESKTOP-README.md) for build instruction
 - Add additional Protobuf translations like turning off incoming DMs or friend requests
 - Loading more profile data when clicking on a channel
   - This seems to be related to the member list not working for certain servers. I'm honestly not sure what's the problem here
+- Implement custom status updates and presence updates (online/idle/dnd/invisible)
+- Implement logging in without a token (maybe a popup with the real fluxer login screen?)
+- Normalize URL behavior when sending a message with a copied URL from the app (bring back the original url when a message is sent, not the localhost one so people outside Fluxtop can click it)
 - Image uploads
-- make the app actually start on macOS (codesigning stuff...)
+- fix the updater on macOS (codesigning stuff...)
 - VC support (totally going to happen...)
