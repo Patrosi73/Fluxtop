@@ -5,7 +5,6 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  arrpc@3.5.0: 4313fe844324a52ef0453078a86f5d1ee2d4f406331201211020d9fa243323c4
   electron-updater: 080505564abb2ebbda932bbf8fe91540c74dd905de994888d52ffce6f882f887
 
 importers:
@@ -13,8 +12,8 @@ importers:
   .:
     dependencies:
       arrpc:
-        specifier: github:OpenAsar/arrpc#2234e9c9111f4c42ebcc3aa6a2215bfd979eef77
-        version: https://codeload.github.com/OpenAsar/arrpc/tar.gz/2234e9c9111f4c42ebcc3aa6a2215bfd979eef77(patch_hash=4313fe844324a52ef0453078a86f5d1ee2d4f406331201211020d9fa243323c4)
+        specifier: github:Vencord/arrpc#82ece7442564d725d8202a8bb9bed5903ee85026
+        version: https://codeload.github.com/Vencord/arrpc/tar.gz/82ece7442564d725d8202a8bb9bed5903ee85026
       electron-updater:
         specifier: 6.6.2
         version: 6.6.2(patch_hash=080505564abb2ebbda932bbf8fe91540c74dd905de994888d52ffce6f882f887)(supports-color@7.2.0)
@@ -96,8 +95,8 @@ importers:
         version: 3.7.0
     optionalDependencies:
       '@vencord/venmic':
-        specifier: ^7.2.1
-        version: 7.2.1(supports-color@7.2.0)
+        specifier: ^7.2.3
+        version: 7.2.3(supports-color@7.2.0)
 
   packages/libvesktop:
     devDependencies:
@@ -562,8 +561,8 @@ packages:
       '@types/react': 18.3.1
       '@types/react-dom': 18.3.1
 
-  '@vencord/venmic@7.2.1':
-    resolution: {integrity: sha512-VwRDQDpLMgN328VeCdnZ/UwJpoBUbAi3rdXK3QqhCHC/u5p8mhze3/R1Y1Beoxe1MICITelE2dzATQ7pJU/xuw==}
+  '@vencord/venmic@7.2.3':
+    resolution: {integrity: sha512-57ei2g+mSJidLf8B2SSYPbHBsh5SS/Y08IWqkJ2+uWaj66qnWLPQjtJ2TslczgZqbVwE1JvYxCNTR1zVJGLW9A==}
     engines: {node: '>=14.15'}
     os: [linux]
 
@@ -682,9 +681,9 @@ packages:
     resolution: {integrity: sha512-BNoCY6SXXPQ7gF2opIP4GBE+Xw7U+pHMYKuzjgCN3GwiaIR09UUeKfheyIry77QtrCBlC0KK0q5/TER/tYh3PQ==}
     engines: {node: '>= 0.4'}
 
-  arrpc@https://codeload.github.com/OpenAsar/arrpc/tar.gz/2234e9c9111f4c42ebcc3aa6a2215bfd979eef77:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/OpenAsar/arrpc/tar.gz/2234e9c9111f4c42ebcc3aa6a2215bfd979eef77}
-    version: 3.5.0
+  arrpc@https://codeload.github.com/Vencord/arrpc/tar.gz/82ece7442564d725d8202a8bb9bed5903ee85026:
+    resolution: {gitHosted: true, integrity: sha512-2Tj4F1K+WEmu2gOLZC3Do8NtIPlMhLFvA2OrlE3lOV/HV9Lf8i5KboRv+NWv86zyrlCMzZUSVnzjYKPKuP3Ssw==, tarball: https://codeload.github.com/Vencord/arrpc/tar.gz/82ece7442564d725d8202a8bb9bed5903ee85026}
+    version: 3.7.0
     hasBin: true
 
   asn1js@3.0.10:
@@ -725,8 +724,8 @@ packages:
   aws4@1.13.2:
     resolution: {integrity: sha512-lHe62zvbTB5eEABUVi/AwVh0ZKY9rMMDhmm+eeyuuUQbQ3+J+fONVQOZyj+DdrvD4BY33uYniyRJ4UJIaSKAfw==}
 
-  axios@1.18.1:
-    resolution: {integrity: sha512-3nTvFlvpn9Zu/RkHUqtc7/+al4UpRW5az71ap5zccp6e8RAYEzhMTecX8Dz1wWDYrPpUoB1HAQEGEAEvUr7S9g==}
+  axios@1.20.0:
+    resolution: {integrity: sha512-r8aOh8j9cGKpgQAqpzrUHnSIc6a59Y3Xf/cv8sy1DrHCkZHzQGEuoq1tARk6qSyDdtQGSDgpb9kFlruzPvrgwg==}
 
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
@@ -1359,8 +1358,8 @@ packages:
     resolution: {integrity: sha512-eXvGGwZ5CL17ZSwHWd3bbgk7UUpF6IFHtP57NYYakPvHOs8GDgDe5KJI36jIJzDkJ6eJjuzRA8eBQb6SkKue0g==}
     engines: {node: '>=14.14'}
 
-  fs-extra@11.3.6:
-    resolution: {integrity: sha512-w8ZNZr2mKIc7qeNaQ9AVPT1+iFaI+Avd4xudVOvdDJ8VytREi1Ft5Ih7hd9jjehod8vAM5GMsfQ/TpPf4EyoEA==}
+  fs-extra@11.4.0:
+    resolution: {integrity: sha512-EQsFzMUJkCKGr1ePqlYADkIUmHW1s3ZXr5Yqy6wbGrfUCphpl2maM/kyOIRA2HpP3AaFQTZXD4ldjek+nccddA==}
     engines: {node: '>=14.14'}
 
   fs-extra@7.0.1:
@@ -2016,6 +2015,10 @@ packages:
 
   node-addon-api@8.9.0:
     resolution: {integrity: sha512-ekZMeaaIzSQTSpr7X2X3iJM7lTzgnx8ahAG9pJfT/7+14mlEM8ZYQ9cgCDvSSRbReFK0oHli3WrZdCiRsgAT9Q==}
+    engines: {node: ^18 || ^20 || >= 21}
+
+  node-addon-api@8.9.2:
+    resolution: {integrity: sha512-VijLXbi3UACN69I0JVXJsX4tjACjNoQDgv2gTF6sx2wWEi8tkSg2eX8p5gSIFi8z2+DL3oHmY6OyKce38SDolg==}
     engines: {node: ^18 || ^20 || >= 21}
 
   node-api-headers@1.9.0:
@@ -2797,8 +2800,8 @@ packages:
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
-  ws@8.21.0:
-    resolution: {integrity: sha512-Vsp28b7DRcimFQvrqu2Wek3z1iYxDCWqHYB8Qsnk/S4RfaCQzPGPyBNuVjJV3cd6UiKtUtp6sNM77gWvzcCH+g==}
+  ws@8.21.3:
+    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -2923,7 +2926,7 @@ snapshots:
       '@malept/cross-spawn-promise': 2.0.0
       debug: 4.4.3(supports-color@7.2.0)
       dir-compare: 4.2.0
-      fs-extra: 11.3.6
+      fs-extra: 11.4.0
       minimatch: 9.0.9
       plist: 3.1.0
     transitivePeerDependencies:
@@ -2933,7 +2936,7 @@ snapshots:
     dependencies:
       cross-dirname: 0.1.0
       debug: 4.4.3(supports-color@7.2.0)
-      fs-extra: 11.3.6
+      fs-extra: 11.4.0
       minimist: 1.2.8
       postject: 1.0.0-alpha.6
     transitivePeerDependencies:
@@ -3324,10 +3327,10 @@ snapshots:
       ts-pattern: 5.9.0
       type-fest: 5.8.0
 
-  '@vencord/venmic@7.2.1(supports-color@7.2.0)':
+  '@vencord/venmic@7.2.3(supports-color@7.2.0)':
     dependencies:
       cmake-js: 7.4.0(supports-color@7.2.0)
-      node-addon-api: 8.9.0
+      node-addon-api: 8.9.2
       pkg-prebuilds: 0.2.1
     transitivePeerDependencies:
       - supports-color
@@ -3510,9 +3513,9 @@ snapshots:
       get-intrinsic: 1.3.0
       is-array-buffer: 3.0.5
 
-  arrpc@https://codeload.github.com/OpenAsar/arrpc/tar.gz/2234e9c9111f4c42ebcc3aa6a2215bfd979eef77(patch_hash=4313fe844324a52ef0453078a86f5d1ee2d4f406331201211020d9fa243323c4):
+  arrpc@https://codeload.github.com/Vencord/arrpc/tar.gz/82ece7442564d725d8202a8bb9bed5903ee85026:
     dependencies:
-      ws: 8.21.0
+      ws: 8.21.3
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
@@ -3543,7 +3546,7 @@ snapshots:
 
   aws4@1.13.2: {}
 
-  axios@1.18.1(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0):
+  axios@1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0):
     dependencies:
       follow-redirects: 1.16.0(debug@4.4.3(supports-color@7.2.0))
       form-data: 4.0.6
@@ -3716,9 +3719,9 @@ snapshots:
 
   cmake-js@7.4.0(supports-color@7.2.0):
     dependencies:
-      axios: 1.18.1(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
+      axios: 1.20.0(debug@4.4.3(supports-color@7.2.0))(supports-color@7.2.0)
       debug: 4.4.3(supports-color@7.2.0)
-      fs-extra: 11.3.6
+      fs-extra: 11.4.0
       memory-stream: 1.0.0
       node-api-headers: 1.9.0
       npmlog: 6.0.2
@@ -4416,7 +4419,7 @@ snapshots:
       jsonfile: 6.2.1
       universalify: 2.0.1
 
-  fs-extra@11.3.6:
+  fs-extra@11.4.0:
     dependencies:
       graceful-fs: 4.2.11
       jsonfile: 6.2.1
@@ -5127,6 +5130,9 @@ snapshots:
       semver: 7.8.5
 
   node-addon-api@8.9.0: {}
+
+  node-addon-api@8.9.2:
+    optional: true
 
   node-api-headers@1.9.0:
     optional: true
@@ -6069,7 +6075,7 @@ snapshots:
 
   wrappy@1.0.2: {}
 
-  ws@8.21.0: {}
+  ws@8.21.3: {}
 
   xml-formatter@3.7.0:
     dependencies:
