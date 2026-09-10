@@ -44,7 +44,6 @@ Check out the original [Vesktop readme](VESKTOP-README.md) for build instruction
 ## Changes from upstream Vesktop
 - Implemented token login, this is required for Fluxer as proxying regular authentication is impossible
   - Also added detection if the token expires
-- Fixed up titlebar defaults on Windows, this makes the Discord titlebar actually work by default (this was personally bothering me :P)
 
 ## TODO
 - Make toggling connection visibility work
