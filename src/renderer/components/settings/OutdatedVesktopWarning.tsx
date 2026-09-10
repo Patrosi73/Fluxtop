@@ -16,7 +16,7 @@ export function OutdatedVesktopWarning() {
 
     return (
         <Card variant="warning" className={cl("updater-card")}>
-            <HeadingTertiary>Your Vesktop is outdated!</HeadingTertiary>
+            <HeadingTertiary>Your Fluxtop is outdated!</HeadingTertiary>
             <Paragraph>Staying up to date is important for security and stability.</Paragraph>
 
             <Button onClick={() => VesktopNative.app.openUpdater()} variant="secondary">

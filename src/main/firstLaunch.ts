@@ -33,11 +33,7 @@ export function createFirstLaunchTour() {
         frame: true,
         autoHideMenuBar: true,
         height: 550,
-        width: 600,
-        webPreferences: {
-            sandbox: false,
-            webSecurity: false
-        }
+        width: 600
     });
 
     makeLinksOpenExternally(win);
@@ -96,11 +92,7 @@ export function createFluxerTokenRefreshWindow(
         autoHideMenuBar: true,
         height: 360,
         width: 600,
-        resizable: false,
-        webPreferences: {
-            sandbox: false,
-            webSecurity: false
-        }
+        resizable: false
     });
 
     makeLinksOpenExternally(win);
