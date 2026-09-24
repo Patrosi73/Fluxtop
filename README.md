@@ -43,8 +43,6 @@ Desktop handoff is recommended but as an alternative, you may log in with an exi
 
 6. If your token is correct you should be logged in. If not (or if it expires in the future), you'll see the session update screen. From there, paste in the correct token and try again.
 
-  <img width="586" height="353" alt="image" src="https://github.com/user-attachments/assets/c30be99a-3b61-4ceb-9dbd-726ede75612f" />
-
 
 ## Changes from upstream discord-adapter-meme
 - **CDN routing for fluxerusercontent.com URLs** (this allows for badges and some other stuff to work properly)
