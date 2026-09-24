@@ -2,159 +2,92 @@
 <meta charset="utf-8" />
 
 <head>
-    <title>Update Fluxer Token</title>
+    <title>Update Fluxer Login</title>
 
     <link rel="stylesheet" href="./common.css" type="text/css" />
-
-    <style>
-        body {
-            height: 100vh;
-
-            padding: 1.5em;
-            padding-bottom: 1em;
-
-            border: 1px solid var(--fg-semi-trans);
-            border-top: none;
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-        }
-
-        h1 {
-            margin: 0.4em 0 0;
-        }
-
-        p {
-            margin: 1em 0 2em;
-            color: var(--fg-secondary);
-        }
-
-        form {
-            display: grid;
-            gap: 1em;
-            margin: 0;
-        }
-
-        label {
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            gap: 1em;
-            align-items: center;
-        }
-
-        label div {
-            display: grid;
-            gap: 0.2em;
-        }
-
-        label h2 {
-            margin: 0;
-            font-weight: normal;
-            font-size: 1.1rem;
-            line-height: 1rem;
-        }
-
-        label span {
-            font-size: 0.9rem;
-            font-weight: 400;
-            color: var(--fg-secondary);
-        }
-
-        input[type="password"],
-        input[type="text"] {
-            width: 100%;
-            max-width: 380px;
-            box-sizing: border-box;
-            padding: 0.45em 0.6em;
-            border: 1px solid var(--fg-semi-trans);
-            border-radius: 4px;
-            background: transparent;
-            color: var(--fg);
-            outline: none;
-        }
-
-        input[type="password"]:focus,
-        input[type="text"]:focus {
-            border-color: var(--link);
-        }
-
-        #show-wrap {
-            display: flex;
-            justify-content: flex-start;
-            gap: 0.4em;
-            align-items: center;
-            color: var(--fg-secondary);
-        }
-
-        #show-token {
-            margin: 0;
-        }
-
-        #buttons {
-            display: flex;
-            justify-content: end;
-            gap: 0.5em;
-            margin-top: auto;
-        }
-
-        button {
-            padding: 0.6em;
-            background: #666;
-            color: white;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            transition: 200ms filter;
-        }
-
-        button:hover {
-            filter: brightness(0.8);
-        }
-
-        #submit {
-            background: green;
-        }
-    </style>
+    <link rel="stylesheet" href="./fluxer-login.css" type="text/css" />
 </head>
 
 <body>
-    <h1>Token expired</h1>
-    <p>Your Fluxer token is no longer valid. Paste a new token to continue.</p>
+    <h1>Sign in again</h1>
+    <p>Your Fluxer session is no longer valid. Choose an instance and sign in with handoff or a token.</p>
 
     <form>
         <label>
             <div>
-                <h2>Fluxer Token</h2>
-                <span>Only this value will be updated.</span>
+                <h2>Fluxer Instance</h2>
+                <span>Stable, Canary, or a self-hosted domain</span>
             </div>
-            <input type="password" name="fluxerToken" required />
+            <select name="fluxerInstance" id="fluxer-instance">
+                <option value="canary">Fluxer Canary</option>
+                <option value="stable">Fluxer Stable</option>
+                <option value="custom">Custom</option>
+            </select>
         </label>
-        <label id="show-wrap">
-            <input type="checkbox" id="show-token" />
-            Show Token
+
+        <div class="row" id="custom-instance" hidden>
+            <div>
+                <h2>Instance Domain</h2>
+                <span>Your self-hosted Fluxer origin</span>
+            </div>
+            <div class="stack">
+                <div class="domain-row">
+                    <input type="text" name="fluxerCustomDomain" id="custom-domain" placeholder="chat.example.com" />
+                    <button type="button" id="connect-btn">Connect</button>
+                </div>
+                <span class="status" id="connect-status"></span>
+            </div>
+        </div>
+
+        <label>
+            <div>
+                <h2>Sign In</h2>
+                <span>Desktop handoff is recommended</span>
+            </div>
+            <select name="authMethod" id="auth-method">
+                <option value="handoff" selected>Desktop handoff</option>
+                <option value="token">Token login</option>
+            </select>
         </label>
+
+        <div class="auth-rows">
+            <div class="row" id="handoff-login" hidden>
+                <div>
+                    <h2>Desktop Handoff</h2>
+                    <span>Enter this code on the Fluxer login handoff screen</span>
+                </div>
+                <div class="stack">
+                    <div id="handoff-code">--------</div>
+                    <div class="controls">
+                        <button type="button" id="handoff-start">Get code</button>
+                        <button type="button" id="handoff-open">Open code screen</button>
+                    </div>
+                    <span class="status" id="handoff-status"></span>
+                </div>
+            </div>
+
+            <div class="row" id="token-login" hidden>
+                <div>
+                    <h2>Fluxer Token</h2>
+                    <span>Take a look at the README for instructions</span>
+                </div>
+                <div class="stack">
+                    <input type="password" name="fluxerToken" id="fluxer-token" />
+                    <label id="show-wrap">
+                        <input type="checkbox" id="show-token" />
+                        Show Token
+                    </label>
+                </div>
+            </div>
+        </div>
     </form>
+
+    <p class="status" id="form-status"></p>
+
     <div id="buttons">
-        <button id="cancel">Cancel</button>
-        <button id="submit">Save Token</button>
+        <button id="cancel" type="button">Cancel</button>
+        <button id="submit" type="button">Continue</button>
     </div>
 </body>
 
-<script>
-    const tokenInput = document.querySelector('input[name="fluxerToken"]');
-    const showToken = document.getElementById("show-token");
-
-    showToken.onchange = () => {
-        tokenInput.type = showToken.checked ? "text" : "password";
-    };
-
-    cancel.onclick = () => console.info("cancel");
-    submit.onclick = e => {
-        const form = document.querySelector("form");
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        console.info("form:" + JSON.stringify(data));
-        e.preventDefault();
-    };
-</script>
+<script src="./fluxer-login.js"></script>

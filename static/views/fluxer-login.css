@@ -1,0 +1,224 @@
+body {
+    height: 100vh;
+    padding: 1.5em;
+    padding-bottom: 1em;
+    border: 1px solid var(--fg-semi-trans);
+    border-top: none;
+    display: flex;
+    flex-direction: column;
+    box-sizing: border-box;
+    overflow: auto;
+}
+
+select,
+input[type="password"],
+input[type="text"] {
+    background: var(--bg);
+    color: var(--fg);
+    padding: 0.45em 0.6em;
+    border: 1px solid var(--fg-semi-trans);
+    border-radius: 4px;
+    outline: none;
+    color-scheme: light dark;
+}
+
+select {
+    margin: -0.3em;
+    padding: 0.3em;
+    border-radius: 6px;
+    cursor: pointer;
+    max-width: 220px;
+}
+
+select option {
+    background: var(--bg);
+    color: var(--fg);
+}
+
+h1 {
+    margin: 0.4em 0 0;
+}
+
+p {
+    margin: 1em 0 1.5em;
+}
+
+form {
+    display: grid;
+    gap: 1em;
+    margin: 0;
+}
+
+label,
+.row {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    align-items: center;
+}
+
+label:has(input[type="checkbox"]) {
+    cursor: pointer;
+}
+
+label:not(:last-child)::after,
+.row::after {
+    content: "";
+    position: absolute;
+    bottom: -10px;
+    width: 100%;
+    height: 1px;
+    background-color: var(--fg-secondary);
+    opacity: 0.5;
+}
+
+label div,
+.row > div:first-child {
+    display: grid;
+    gap: 0.2em;
+}
+
+label h2,
+.row h2 {
+    margin: 0;
+    font-weight: normal;
+    font-size: 1.1rem;
+    line-height: 1rem;
+}
+
+label span,
+.row span,
+.status {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--fg-secondary);
+}
+
+.status.error {
+    color: #f66;
+}
+
+.status.ok {
+    color: #6c6;
+}
+
+.controls {
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+}
+
+.stack {
+    display: grid;
+    gap: 0.5em;
+    justify-items: end;
+    max-width: 320px;
+    width: 100%;
+}
+
+.stack > input {
+    width: 100%;
+    max-width: 280px;
+    box-sizing: border-box;
+}
+
+.domain-row {
+    display: flex;
+    gap: 0.5em;
+    align-items: stretch;
+    justify-self: end;
+}
+
+.domain-row input {
+    width: 175px;
+    flex: none;
+    box-sizing: border-box;
+}
+
+.stack .status {
+    text-align: right;
+    justify-self: end;
+    max-width: 100%;
+}
+
+.stack > .status:empty {
+    display: none;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+.auth-rows {
+    display: grid;
+}
+
+.auth-rows > .row {
+    grid-area: 1 / 1;
+}
+
+.auth-rows > .row[hidden] {
+    display: flex !important;
+    visibility: hidden;
+}
+
+#handoff-code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 1.35rem;
+    letter-spacing: 0.08em;
+    color: var(--fg);
+    text-align: right;
+    justify-self: end;
+}
+
+#show-wrap {
+    justify-content: flex-start;
+    gap: 0.4em;
+    color: var(--fg-secondary);
+}
+
+#buttons {
+    display: flex;
+    justify-content: end;
+    gap: 0.5em;
+    margin-top: auto;
+    padding-top: 1em;
+}
+
+button {
+    padding: 0.6em 0.8em;
+    background: #666;
+    color: white;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: 200ms filter, 200ms background-color;
+    white-space: nowrap;
+}
+
+button:hover {
+    filter: brightness(0.8);
+}
+
+#submit {
+    background: green;
+}
+
+#cancel {
+    background: red;
+}
+
+#handoff-open {
+    background: var(--link, #5865f2);
+}
+
+#connect-btn.connect-ok {
+    background: green;
+}
+
+#connect-btn.connect-error {
+    background: red;
+}

@@ -156,7 +156,7 @@ app.on("window-all-closed", () => {
 });
 
 app.on("before-quit", () => {
-    stopDiscordAdapter();
+    void stopDiscordAdapter();
 });
 
 // Sets the WebRTC IP handling policy for all current and future windows.

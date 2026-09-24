@@ -7,7 +7,7 @@
 import { Settings } from "./settings";
 
 export const DefaultVesktopSettings: Settings = {
-    discordBranch: "stable",
+    discordBranch: "canary",
     hardwareAcceleration: true,
     hardwareVideoAcceleration: false,
     nativeTitleBar: false,

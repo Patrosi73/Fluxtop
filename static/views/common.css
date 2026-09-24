@@ -30,3 +30,10 @@ a {
 a:hover {
     color: var(--link-hover);
 }
+
+@media (prefers-color-scheme: dark) {
+    select,
+    select option {
+        color-scheme: dark;
+    }
+}

@@ -11,9 +11,12 @@ import { VesktopNative } from "./VesktopNative";
 
 contextBridge.exposeInMainWorld("VesktopNative", VesktopNative);
 
-ipcRenderer.on(IpcEvents.SET_FLUXER_TOKEN, (_, token) => {
-    localStorage.setItem("token", JSON.stringify(token));
-});
+const fluxerToken = ipcRenderer.sendSync(IpcEvents.GET_FLUXER_TOKEN) as string | null;
+if (fluxerToken) {
+    localStorage.setItem("token", JSON.stringify(fluxerToken));
+} else {
+    localStorage.removeItem("token");
+}
 
 // While sandboxed, Electron "polyfills" these APIs as local variables.
 // We have to pass them as arguments as they are not global

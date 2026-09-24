@@ -35,7 +35,7 @@ export const cl = classNameFactory("vcd-settings-");
 export type SettingsComponent = ComponentType<{ settings: typeof Settings.store }>;
 
 const SettingsOptions: Record<string, Array<BooleanSetting | SettingsComponent>> = {
-    "Discord Branch": [DiscordBranchPicker],
+    "API Version": [DiscordBranchPicker],
     "System Startup & Performance": [
         AutoStartToggle,
         {

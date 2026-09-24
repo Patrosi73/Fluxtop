@@ -5,127 +5,7 @@
     <title>Fluxtop Setup</title>
 
     <link rel="stylesheet" href="./common.css" type="text/css" />
-
-    <style>
-        body {
-            height: 100vh;
-
-            padding: 1.5em;
-            padding-bottom: 1em;
-
-            border: 1px solid var(--fg-semi-trans);
-            border-top: none;
-            display: flex;
-            flex-direction: column;
-            box-sizing: border-box;
-        }
-
-        select {
-            background: var(--bg);
-            color: var(--fg);
-            padding: 0.3em;
-            margin: -0.3em;
-            border-radius: 6px;
-        }
-
-        h1 {
-            margin: 0.4em 0 0;
-        }
-
-        p {
-            margin: 1em 0 2em;
-        }
-
-        form {
-            display: grid;
-            gap: 1em;
-            margin: 0;
-        }
-
-        label {
-            position: relative;
-            display: flex;
-            justify-content: space-between;
-            gap: 1em;
-            align-items: center;
-        }
-
-        label:has(input[type="checkbox"]),
-        select {
-            cursor: pointer;
-        }
-
-        label:not(:last-child)::after {
-            content: "";
-            position: absolute;
-            bottom: -10px;
-            width: 100%;
-            height: 1px;
-            background-color: var(--fg-secondary);
-            opacity: 0.5;
-        }
-
-        label div {
-            display: grid;
-            gap: 0.2em;
-        }
-
-        label h2 {
-            margin: 0;
-            font-weight: normal;
-            font-size: 1.1rem;
-            line-height: 1rem;
-        }
-
-        label span {
-            font-size: 0.9rem;
-            font-weight: 400;
-            color: var(--fg-secondary);
-        }
-
-        input[type="password"],
-        input[type="text"] {
-            width: 100%;
-            max-width: 220px;
-            box-sizing: border-box;
-            padding: 0.45em 0.6em;
-            border: 1px solid var(--fg-semi-trans);
-            border-radius: 4px;
-            background: transparent;
-            color: var(--fg);
-            outline: none;
-        }
-
-        input[type="password"]:focus,
-        input[type="text"]:focus {
-            border-color: var(--link);
-        }
-
-        #buttons {
-            display: flex;
-            justify-content: end;
-            gap: 0.5em;
-            margin-top: auto;
-        }
-
-        button {
-            padding: 0.6em;
-            background: red;
-            color: white;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            transition: 200ms filter;
-        }
-
-        button:hover {
-            filter: brightness(0.8);
-        }
-
-        #submit {
-            background: green;
-        }
-    </style>
+    <link rel="stylesheet" href="./fluxer-login.css" type="text/css" />
 </head>
 
 <body>
@@ -135,11 +15,67 @@
     <form>
         <label>
             <div>
-                <h2>Fluxer Token</h2>
-                <span>This will be used to authenticate with the Fluxer API. To obtain one, please read the repository README.</span>
+                <h2>Fluxer Instance</h2>
+                <span>Choose Canary, Stable, or a self-hosted instance</span>
             </div>
-            <input type="password" name="fluxerToken" />
+            <select name="fluxerInstance" id="fluxer-instance">
+                <option value="canary">Fluxer Canary</option>
+                <option value="stable">Fluxer Stable</option>
+                <option value="custom">Custom</option>
+            </select>
         </label>
+
+        <div class="row" id="custom-instance" hidden>
+            <div>
+                <h2>Instance Domain</h2>
+                <span>Your self-hosted Fluxer origin</span>
+            </div>
+            <div class="stack">
+                <div class="domain-row">
+                    <input type="text" name="fluxerCustomDomain" id="custom-domain" placeholder="chat.example.com" />
+                    <button type="button" id="connect-btn">Connect</button>
+                </div>
+                <span class="status" id="connect-status"></span>
+            </div>
+        </div>
+
+        <label>
+            <div>
+                <h2>Sign In</h2>
+                <span>Desktop handoff is recommended</span>
+            </div>
+            <select name="authMethod" id="auth-method">
+                <option value="handoff" selected>Desktop handoff</option>
+                <option value="token">Token login</option>
+            </select>
+        </label>
+
+        <div class="auth-rows">
+            <div class="row" id="handoff-login" hidden>
+                <div>
+                    <h2>Desktop Handoff</h2>
+                    <span>Enter this code on the Fluxer login handoff screen</span>
+                </div>
+                <div class="stack">
+                    <div id="handoff-code">--------</div>
+                    <div class="controls">
+                        <button type="button" id="handoff-start">Get code</button>
+                        <button type="button" id="handoff-open">Open code screen</button>
+                    </div>
+                    <span class="status" id="handoff-status"></span>
+                </div>
+            </div>
+
+            <div class="row" id="token-login" hidden>
+                <div>
+                    <h2>Fluxer Token</h2>
+                    <span>Paste a session token from an existing Fluxer login</span>
+                </div>
+                <div class="stack">
+                    <input type="password" name="fluxerToken" id="fluxer-token" />
+                </div>
+            </div>
+        </div>
 
         <label>
             <div>
@@ -165,19 +101,13 @@
             <input type="checkbox" name="minimizeToTray" checked />
         </label>
     </form>
+
+    <p class="status" id="form-status"></p>
+
     <div id="buttons">
-        <button id="cancel">Quit</button>
-        <button id="submit">Submit</button>
+        <button id="cancel" type="button">Quit</button>
+        <button id="submit" type="button">Submit</button>
     </div>
 </body>
 
-<script>
-    cancel.onclick = () => console.info("cancel");
-    submit.onclick = e => {
-        const form = document.querySelector("form");
-        const formData = new FormData(form);
-        const data = Object.fromEntries(formData.entries());
-        console.info("form:" + JSON.stringify(data));
-        e.preventDefault();
-    };
-</script>
+<script src="./fluxer-login.js"></script>

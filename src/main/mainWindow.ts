@@ -25,7 +25,7 @@ import { createAboutWindow } from "./about";
 import { initArRPC } from "./arrpc";
 import { CommandLine } from "./cli";
 import { BrowserUserAgent, DEFAULT_HEIGHT, DEFAULT_WIDTH, MIN_HEIGHT, MIN_WIDTH } from "./constants";
-import { onDiscordAdapterInvalidToken, startDiscordAdapter } from "./discordAdapter";
+import { onDiscordAdapterInvalidToken, restartDiscordAdapter, startDiscordAdapter } from "./discordAdapter";
 import { AppEvents } from "./events";
 import { createFluxerTokenRefreshWindow } from "./firstLaunch";
 import { sendRendererCommand } from "./ipcCommands";
@@ -256,6 +256,16 @@ function initSettingsListeners(win: BrowserWindow) {
     });
 
     addSettingsListener("spellCheckLanguages", languages => initSpellCheckLanguages(win, languages));
+    addSettingsListener("fluxerInstance", switchFluxerInstance);
+    addSettingsListener("fluxerCustomDomain", switchFluxerInstance);
+}
+
+let instanceSwitch: Promise<void> | undefined;
+function switchFluxerInstance() {
+    instanceSwitch ??= restartDiscordAdapter()
+        .then(() => loadUrl(undefined))
+        .catch(error => console.error("[Fluxtop] Failed to switch Fluxer instance:", error))
+        .finally(() => (instanceSwitch = undefined));
 }
 
 async function initSpellCheckLanguages(win: BrowserWindow, languages?: string[]) {
@@ -434,6 +444,7 @@ function createMainWindow() {
 
     initMenuBar(win);
     makeLinksOpenExternally(win);
+    initLoginRedirectGuard(win);
     initSettingsListeners(win);
     initSpellCheck(win);
     initDevtoolsListeners(win);
@@ -453,6 +464,18 @@ function hasFluxerToken() {
     return !!Settings.store.fluxerToken?.trim();
 }
 
+function initLoginRedirectGuard(win: BrowserWindow) {
+    // for now we don't want to ever show the discord login page... maybe in the future? only for custom instances with captchas disabled though
+    const onLogin = (url: string, event?: { preventDefault(): void }) => {
+        if (!/^\/login(\/|$)/.test(new URL(url).pathname)) return;
+        event?.preventDefault();
+        loadUrl(undefined);
+    };
+
+    win.webContents.on("will-navigate", (event, url) => onLogin(url, event));
+    win.webContents.on("did-navigate-in-page", (_, url) => onLogin(url));
+}
+
 function openFluxerTokenRefreshWindow() {
     if (!mainWin || mainWin.isDestroyed()) return;
 
@@ -464,13 +487,16 @@ function openFluxerTokenRefreshWindow() {
     fluxerTokenRefreshWindow = createFluxerTokenRefreshWindow(
         token => {
             Settings.store.fluxerToken = token;
-            if (mainWin && !mainWin.isDestroyed()) {
-                mainWin.webContents.send(IpcEvents.SET_FLUXER_TOKEN, token);
+            if (!instanceSwitch && mainWin && !mainWin.isDestroyed()) {
                 loadUrl(undefined);
             }
         },
-        () => {
+        dismissed => {
             fluxerTokenRefreshWindow = undefined;
+            if (dismissed) {
+                isQuitting = true;
+                app.quit();
+            }
         },
         mainWin
     );
@@ -505,6 +531,10 @@ function retryUrl(url: string, description: string) {
 }
 
 export async function createWindows() {
+    if (!Settings.store.fluxerInstance) {
+        Settings.store.fluxerInstance = Settings.store.discordBranch === "stable" ? "stable" : "canary";
+    }
+
     const startMinimized = CommandLine.values["start-minimized"];
 
     let splash: BrowserWindow | undefined;
@@ -533,11 +563,7 @@ export async function createWindows() {
     AppEvents.on("appLoaded", () => {
         splash?.destroy();
 
-        if (hasFluxerToken()) {
-            const token = Settings.store.fluxerToken!.trim();
-            Settings.store.fluxerToken = token;
-            mainWin!.webContents.send(IpcEvents.SET_FLUXER_TOKEN, token);
-        } else {
+        if (!hasFluxerToken()) {
             openFluxerTokenRefreshWindow();
         }
 

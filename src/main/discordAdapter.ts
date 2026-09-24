@@ -9,8 +9,15 @@ import { UtilityProcess, utilityProcess } from "electron";
 import { existsSync } from "fs";
 import { request } from "https";
 import { join } from "path";
+import {
+    DEFAULT_FLUXER_ENDPOINTS,
+    discoverFluxerInstance,
+    type FluxerEndpoints,
+    resolveInstanceOrigin
+} from "shared/fluxerInstance";
 
 import { DATA_DIR } from "./constants";
+import { Settings } from "./settings";
 
 const ADAPTER_BUNDLE_ENTRY = join(__dirname, "discordAdapter.js");
 const ADAPTER_STUFF_DIR = join(__dirname, "..", "..", "discord-adapter-meme", "stuff");
@@ -20,9 +27,9 @@ const ADAPTER_CWD_CANDIDATES = [
 ];
 const ADAPTER_PORT = 3666;
 const START_TIMEOUT = 30_000;
-const START_POLL_INTERVAL = 500;
 const ADAPTER_IPC_EVENT = "adapter:event";
 const ADAPTER_EVENT_INVALID_TOKEN = "fluxer-invalid-token";
+const ADAPTER_EVENT_READY = "adapter-ready";
 
 type AdapterProcess = ChildProcess | UtilityProcess;
 type AdapterInvalidTokenHandler = () => void;
@@ -34,7 +41,6 @@ type EnvValue = string | undefined;
 
 let adapterProcess: AdapterProcess | undefined;
 let startPromise: Promise<void> | undefined;
-let adapterManagedByVesktop = false;
 const invalidTokenHandlers = new Set<AdapterInvalidTokenHandler>();
 
 type AdapterStatusHandler = (message: string) => void;
@@ -54,15 +60,14 @@ export function onDiscordAdapterInvalidToken(handler: AdapterInvalidTokenHandler
     return () => invalidTokenHandlers.delete(handler);
 }
 
-function attachAdapterMessageBridge(processRef: AdapterProcess) {
-    const onMessage = (message: AdapterIpcMessage) => {
-        if (message?.type !== ADAPTER_IPC_EVENT) return;
-        if (message?.event === ADAPTER_EVENT_INVALID_TOKEN) {
-            emitAdapterInvalidToken();
-        }
-    };
+const events = (processRef: AdapterProcess) => processRef as NodeJS.EventEmitter;
 
-    (processRef as any).on?.("message", onMessage);
+function attachAdapterMessageBridge(processRef: AdapterProcess, onReady: () => void) {
+    events(processRef).on("message", (message: AdapterIpcMessage) => {
+        if (message?.type !== ADAPTER_IPC_EVENT) return;
+        if (message.event === ADAPTER_EVENT_INVALID_TOKEN) emitAdapterInvalidToken();
+        if (message.event === ADAPTER_EVENT_READY) onReady();
+    });
 }
 
 function resolveAdapterCwd() {
@@ -101,19 +106,21 @@ function pingAdapter() {
     });
 }
 
-function sleep(ms: number) {
-    return new Promise<void>(resolve => setTimeout(resolve, ms));
+function waitForProcessExit(processRef: AdapterProcess) {
+    return new Promise<void>(resolve => events(processRef).once("exit", () => resolve()));
 }
 
-async function waitForAdapterReady(timeoutMs: number) {
-    const deadline = Date.now() + timeoutMs;
+function attachAndWaitForReady(processRef: AdapterProcess, timeoutMs: number) {
+    return new Promise<boolean>(resolve => {
+        const finish = (ok: boolean) => {
+            clearTimeout(timer);
+            resolve(ok);
+        };
+        const timer = setTimeout(() => finish(false), timeoutMs);
 
-    while (Date.now() < deadline) {
-        if (await pingAdapter()) return true;
-        await sleep(START_POLL_INTERVAL);
-    }
-
-    return false;
+        attachAdapterMessageBridge(processRef, () => finish(true));
+        events(processRef).once("exit", () => finish(false));
+    });
 }
 
 function listenToAdapterLogs(onStatus?: AdapterStatusHandler) {
@@ -133,10 +140,6 @@ function listenToAdapterLogs(onStatus?: AdapterStatusHandler) {
         else if (line.includes("Loading SSL certificates")) onStatus?.("Starting backend: loading certificates...");
         else if (line.includes("Adapter server running")) onStatus?.("Backend HTTP server is online.");
         else if (line.includes("Gateway")) onStatus?.("Starting backend: initializing gateway...");
-
-        if (line.includes("Fluxer closed (4004: Invalid token)")) {
-            emitAdapterInvalidToken();
-        }
     };
 
     const consume = (chunk: Buffer, isError = false) => {
@@ -152,6 +155,25 @@ function listenToAdapterLogs(onStatus?: AdapterStatusHandler) {
     stderr?.on("data", (chunk: Buffer | string) => consume(Buffer.from(chunk), true));
 }
 
+async function syncFluxerEndpointsFromDiscovery(onStatus?: AdapterStatusHandler): Promise<FluxerEndpoints> {
+    const cached = Settings.store.fluxerEndpoints ?? DEFAULT_FLUXER_ENDPOINTS;
+    const kind = Settings.store.fluxerInstance ?? "canary";
+
+    try {
+        const origin = resolveInstanceOrigin(kind, Settings.store.fluxerCustomDomain);
+
+        onStatus?.(`Syncing Fluxer endpoints from ${origin}...`);
+        const { endpoints } = await discoverFluxerInstance(origin);
+        Settings.store.fluxerEndpoints = endpoints;
+        console.log(`[DiscordAdapter] Synced Fluxer endpoints from ${origin}`);
+        return endpoints;
+    } catch (error) {
+        console.warn("[DiscordAdapter] Failed to sync Fluxer discovery; using cached endpoints.", error);
+        onStatus?.("Using cached Fluxer endpoints (discovery sync failed).");
+        return cached;
+    }
+}
+
 export async function startDiscordAdapter(onStatus?: AdapterStatusHandler) {
     if (startPromise) return startPromise;
 
@@ -161,13 +183,18 @@ export async function startDiscordAdapter(onStatus?: AdapterStatusHandler) {
             return;
         }
 
+        const fluxerEndpoints = await syncFluxerEndpointsFromDiscovery(onStatus);
+        const releaseChannel = Settings.store.fluxerInstance === "canary" ? "canary" : "stable";
+
         onStatus?.("Starting backend adapter...");
         let child: AdapterProcess;
         const adapterEnv = sanitizeEnv({
             ...process.env,
             PORT: String(ADAPTER_PORT),
             VENCORD_USER_DATA_DIR: DATA_DIR,
-            ADAPTER_STUFF_DIR: existsSync(ADAPTER_STUFF_DIR) ? ADAPTER_STUFF_DIR : undefined
+            ADAPTER_STUFF_DIR: existsSync(ADAPTER_STUFF_DIR) ? ADAPTER_STUFF_DIR : undefined,
+            FLUXER_RELEASE_CHANNEL: releaseChannel,
+            FLUXER_ENDPOINTS: JSON.stringify(fluxerEndpoints)
         });
 
         if (existsSync(ADAPTER_BUNDLE_ENTRY)) {
@@ -197,19 +224,17 @@ export async function startDiscordAdapter(onStatus?: AdapterStatusHandler) {
         }
 
         adapterProcess = child;
-        adapterManagedByVesktop = true;
 
         listenToAdapterLogs(onStatus);
-        attachAdapterMessageBridge(child);
 
-        (child as any).once("exit", (code: number | null, signal: NodeJS.Signals | null) => {
+        events(child).once("exit", (code: number | null, signal: NodeJS.Signals | null) => {
             adapterProcess = undefined;
             if (signal || code) {
                 console.error(`[DiscordAdapter] exited unexpectedly (code=${code}, signal=${signal})`);
             }
         });
 
-        const isReady = await waitForAdapterReady(START_TIMEOUT);
+        const isReady = await attachAndWaitForReady(child, START_TIMEOUT);
         if (!isReady) {
             throw new Error("Discord adapter did not become ready in time");
         }
@@ -222,15 +247,24 @@ export async function startDiscordAdapter(onStatus?: AdapterStatusHandler) {
     return startPromise;
 }
 
-export function stopDiscordAdapter() {
-    if (!adapterManagedByVesktop || !adapterProcess) return;
+export async function stopDiscordAdapter() {
+    if (!adapterProcess) return;
+
+    const child = adapterProcess;
+    adapterProcess = undefined;
+    const exitPromise = waitForProcessExit(child);
 
     try {
-        adapterProcess.kill();
+        child.kill();
     } catch (error) {
         console.warn("[DiscordAdapter] Failed to stop adapter process cleanly:", error);
+        return;
     }
 
-    adapterProcess = undefined;
-    adapterManagedByVesktop = false;
+    await exitPromise;
+}
+
+export async function restartDiscordAdapter(onStatus?: AdapterStatusHandler) {
+    await stopDiscordAdapter();
+    await startDiscordAdapter(onStatus);
 }

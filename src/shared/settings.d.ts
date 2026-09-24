@@ -6,8 +6,13 @@
 
 import type { Rectangle } from "electron";
 
+import type { FluxerEndpoints, FluxerInstanceKind } from "./fluxerInstance";
+
 export interface Settings {
     discordBranch: "stable" | "canary" | "ptb";
+    fluxerInstance?: FluxerInstanceKind;
+    fluxerCustomDomain?: string;
+    fluxerEndpoints?: FluxerEndpoints;
     transparencyOption: "none" | "mica" | "tabbed" | "acrylic";
     webRTCIPHandlingPolicy:
         | "default"
