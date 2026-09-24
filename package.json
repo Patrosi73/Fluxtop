@@ -24,7 +24,7 @@
         "generateMeta": "tsx scripts/utils/generateMeta.mts"
     },
     "dependencies": {
-        "arrpc": "github:Vencord/arrpc#82ece7442564d725d8202a8bb9bed5903ee85026",
+        "arrpc": "github:Vencord/arrpc#1dc801e8ea14d96ce8dccff416417614f058afb8",
         "electron-updater": "6.6.2"
     },
     "optionalDependencies": {
@@ -33,14 +33,14 @@
     "devDependencies": {
         "@fal-works/esbuild-plugin-global-externals": "^2.1.2",
         "@stylistic/eslint-plugin": "^5.10.0",
-        "@types/node": "^26.2.0",
+        "@types/node": "^26.6.2",
         "@types/react": "19.2.9",
         "@vencord/types": "^1.15.1",
         "dotenv": "^17.3.1",
-        "electron": "43.2.0",
-        "electron-builder": "^26.15.3",
+        "electron": "44.4.3",
+        "electron-builder": "^26.16.1",
         "esbuild": "^0.28.2",
-        "eslint": "^10.8.1",
+        "eslint": "^10.11.0",
         "eslint-import-resolver-alias": "^1.1.2",
         "eslint-plugin-path-alias": "^2.1.0",
         "eslint-plugin-prettier": "^5.5.6",
@@ -49,12 +49,12 @@
         "eslint-plugin-simple-import-sort": "^14.0.0",
         "eslint-plugin-unused-imports": "^4.4.1",
         "libvesktop": "link:packages/libvesktop",
-        "prettier": "^3.9.6",
+        "prettier": "^3.9.8",
         "source-map-support": "^0.5.21",
-        "tsx": "^4.23.12",
-        "type-fest": "^5.8.0",
+        "tsx": "^4.23.15",
+        "type-fest": "^5.10.0",
         "typescript": "^6.0.3",
-        "typescript-eslint": "^8.67.0",
+        "typescript-eslint": "^8.70.0",
         "xml-formatter": "^3.6.7"
     },
     "packageManager": "pnpm@11.9.0",
@@ -83,6 +83,9 @@
         },
         "beforePack": "scripts/build/beforePack.mjs",
         "afterPack": "scripts/build/afterPack.mjs",
+        "toolsets": {
+            "appimage": "1.0.3"
+        },
         "linux": {
             "icon": "build/icon.svg",
             "category": "Network",
