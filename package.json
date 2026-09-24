@@ -82,7 +82,6 @@
             ]
         },
         "beforePack": "scripts/build/beforePack.mjs",
-        "afterPack": "scripts/build/afterPack.mjs",
         "toolsets": {
             "appimage": "1.0.3"
         },
@@ -155,8 +154,7 @@
                 "NSMicrophoneUsageDescription": "This app needs access to the microphone",
                 "NSCameraUsageDescription": "This app needs access to the camera",
                 "com.apple.security.device.audio-input": true,
-                "com.apple.security.device.camera": true,
-                "CFBundleIconName": "Icon"
+                "com.apple.security.device.camera": true
             },
             "identity": "-",
             "notarize": false,
